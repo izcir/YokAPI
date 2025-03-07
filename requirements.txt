@@ -1,0 +1,4 @@
+aiohttp==3.11.13
+certifi==2025.1.31
+bs4==0.0.2
+pydantic==2.10.6
