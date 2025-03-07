@@ -1,0 +1,79 @@
+# General Python build files
+*.pyc
+*.pyo
+*.pyd
+__pycache__/
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
+pip-wheel-metadata/
+*.manifest
+
+# Virtual environment (Virtualenv) and dependencies
+venv/
+.env/
+*.venv
+env/
+venv.bak/
+Pipfile
+Pipfile.lock
+poetry.lock
+
+# IDE and editor files
+.vscode/
+.idea/
+*.iml
+*.swp
+*.swo
+*.sublime-workspace
+*.sublime-project
+
+# PyCharm-specific files
+*.pydevproject
+.project
+.metadata/
+*.bak
+*.tmp
+*.class
+*.log
+.DS_Store
+Thumbs.db
+
+# PyPI distribution files
+*.tar.gz
+*.whl
+
+# Testing and debugging files
+.tox/
+.nox/
+coverage.xml
+htmlcov/
+pytest_cache/
+*.cover
+*.log
+nosetests.xml
+test-reports/
+junit.xml
+
+# Docker and CI/CD files
+.dockerignore
+docker-compose.yml
+Dockerfile
+.github/
+.circleci/
+.gitlab-ci.yml
+
+# Jupyter Notebook output files
+.ipynb_checkpoints/
+*.ipynb_checkpoint
+
+# Anaconda-specific files
+*.conda
+*.ipynb
+
+# Miscellaneous system files
+*.bak
+*.tmp
+*.log
