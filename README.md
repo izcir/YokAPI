@@ -84,7 +84,8 @@ if __name__ == "__main__":
 ```
 
 ### With Olmadan Kullanım
-``` pythonfrom YokAPI import Lisans, Onlisans
+``` python
+from YokAPI import Lisans, Onlisans
 import asyncio
 
 async def main():
