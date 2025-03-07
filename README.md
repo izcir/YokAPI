@@ -7,11 +7,9 @@
 </p>
 <p align="center">
   <img src="https://img.shields.io/github/repo-size/izcir/YokAPI?style=flat-square" alt="Repo Size">
-  <img src="https://img.shields.io/github/downloads/izcir/YokAPI/total" alt="GitHub All Releases">
   <img src="https://komarev.com/ghpvc/?username=izcir" alt="Profile Views">
   <img src="https://img.shields.io/github/license/izcir/YokAPI" alt="GitHub license">
   <img src="https://img.shields.io/github/last-commit/izcir/YokAPI" alt="GitHub last commit">
-  <img src="https://img.shields.io/pypi/dm/YokAPI" alt="PyPI Downloads">
   <img src="https://img.shields.io/pypi/status/YokAPI" alt="PyPI Status">
   <img src="https://img.shields.io/pypi/v/YokAPI" alt="PyPI Version">
 </p>
