@@ -27,7 +27,7 @@ class Parser():
             elif r_ == " ":
                 r_ = None
             elif r_ == "Dolmadı":
-                pass
+                r_ = None
             elif "." in r_:
                 r_ = int(r_.replace(".", ""))
             else:
@@ -37,7 +37,7 @@ class Parser():
             if r_ in ["---", ""]:
                 r_ = None
             elif r_ == "Dolmadı":
-                pass
+                r_ = None
             else:
                 r_ = float(r_.replace(",", "."))
 
@@ -45,7 +45,7 @@ class Parser():
             if r_ in ["---", ""]:
                 r_ = None
             elif r_ == "Dolmadı":
-                pass
+                r_ = None
             elif r_ == "%":
                 r_ = None
             else:
@@ -397,20 +397,45 @@ class Parser():
     async def ogr_durum_parser(self, osym_kod: int, year: int) -> OgrenimDurumu:
         selectors_ogr_durum = selectors["ogr_durum"]
         rows = self.bs.select(selectors_ogr_durum["rows"])
+        if rows == []:
+            return OgrenimDurumu(
+                osym_kod=osym_kod,
+                year=year,
+                toplam={"sayi":None, "orn":None},
+                lise_yeni={"sayi":None, "orn":None},
+                lise_mezun={"sayi":None, "orn":None},
+                uni_ogr={"sayi":None, "orn":None},
+                uni_mezun={"sayi":None, "orn":None},
+                diger={"sayi":None, "orn":None}
+            )
 
-        tasks = [
-            self.async_select_one(
-                rows[data["index"] - 1],
-                selector=f"{data['selector']}",
-                int_=data["type"] == "int",
-                float_=False,
-                yuzde=data["type"] == "yuzde",
-                ek_yer=False
-            ) for data in selectors_ogr_durum["datas"]
-        ]
+        try: 
+            tasks = [
+                self.async_select_one(
+                    rows[data["index"] - 1],
+                    selector=f"{data['selector']}",
+                    int_=data["type"] == "int",
+                    float_=False,
+                    yuzde=data["type"] == "yuzde",
+                    ek_yer=False
+                ) for data in selectors_ogr_durum["datas"]
+            ]
+
+        except IndexError: 
+            return OgrenimDurumu(
+                osym_kod=osym_kod,
+                year=year,
+                toplam={"sayi":None, "orn":None},
+                lise_yeni={"sayi":None, "orn":None},
+                lise_mezun={"sayi":None, "orn":None},
+                uni_ogr={"sayi":None, "orn":None},
+                uni_mezun={"sayi":None, "orn":None},
+                diger={"sayi":None, "orn":None}
+            ) 
+
 
         results = await asyncio.gather(*tasks)
-
+        
         return OgrenimDurumu(
             osym_kod=osym_kod,
             year=year,
@@ -783,7 +808,7 @@ class Parser():
             lise_alan=results[2],
             puan=results[3],
             sira=results[4],
-            katsayi=float(results[5].split(" ")[0].replace(",", ".")),
+            katsayi=float(results[5].split(" ")[0].replace(",", ".")) if results[5] else None,
             obp=results[6],
             dn=results[7],
             cinsiyet=results[8],
@@ -793,8 +818,16 @@ class Parser():
     async def yks_net_parser(self, osym_kod: int, year: int) -> YksNet:
         selectors_yks_net = selectors["yks_net"]
         rows = self.bs.select(selectors_yks_net["rows"])
-        
-        yks_net = []
+        if rows == []:
+            return YksNet(
+                osym_kod=osym_kod,
+                year=year,
+                ort_obp_012=None,
+                ort_obp_012_006=None,
+                yerlesen_012=None,
+                yerlesen_012_006=None,
+                dersler=None
+            )
         
         async def get_net(net_row):
             tasks = [
@@ -843,6 +876,14 @@ class Parser():
         ort_rows = self.bs.select(selectors_yks_puan["ort_rows"])
         dusuk_rows = self.bs.select(selectors_yks_puan["dusuk_rows"])
 
+        if ort_rows == [] and dusuk_rows == []:
+            return YksPuan(
+                osym_kod=osym_kod,
+                year=year,
+                ort_puan=None,
+                dusuk_puan=None
+            )
+
         ort_tasks = [
             self.async_select_one(
                 ort_rows[data["index"] - 1],
@@ -885,6 +926,14 @@ class Parser():
         selectors_yks_sira = selectors["yks_sira"]
         ort_rows = self.bs.select(selectors_yks_sira["ort_rows"])
         dusuk_rows = self.bs.select(selectors_yks_sira["dusuk_rows"])
+
+        if dusuk_rows == [] and ort_rows == []:
+            return YksSira(
+                osym_kod=osym_kod,
+                year=year,
+                ort_sira=None,
+                dusuk_sira=None
+            )
 
         ort_tasks = [
             self.async_select_one(
@@ -1085,6 +1134,16 @@ class Parser():
     async def tercih_uni_tur_parser(self, osym_kod: int, year: int) -> TercihUniTur:
         selectors_tercih_uni_tur = selectors["tercih_uni_tur"]
         rows = self.bs.select(selectors_tercih_uni_tur["rows"])
+
+        if rows == []:
+            return TercihUniTur(
+                osym_kod=osym_kod,
+                year=year,
+                devlet=None,
+                vakif=None,
+                kibris=None,
+                yabanci=None
+            )
         
         uni_turleri = []
         
@@ -1207,7 +1266,8 @@ class Parser():
             ) for data in selectors_tercih_fark
         ]
 
-        results = await asyncio.gather(*tasks)
+        try: results = await asyncio.gather(*tasks)
+        except AttributeError as e: results = [None, None, None, None, None]
 
         return TercihFark(
             osym_kod=osym_kod,
@@ -1237,7 +1297,8 @@ class Parser():
             ) for data in selectors_tercih_fark
         ]
 
-        results = await asyncio.gather(*tasks)
+        try: results = await asyncio.gather(*tasks)
+        except AttributeError as e: results = [None, None, None, None, None]
 
         return TercihFarkOnlisans(
             osym_kod=osym_kod,

@@ -31,6 +31,7 @@ class GenelBilgiler(BaseModel):
     ort_obp: Optional[float]
     ort_diploma: Optional[float]
 
+
 class GenelBilgilerOnlisans(BaseModel):
     osym_kod: Optional[int]
     year: Optional[int]
@@ -248,7 +249,7 @@ class YksNet(BaseModel):
     yerlesen_012_006: Optional[float]
     ort_obp_012: Optional[float]
     ort_obp_012_006: Optional[float]
-    dersler: list[DersModelDetay]
+    dersler: Optional[list[DersModelDetay]]
 
 class YksPuanModelDetay(BaseModel):
     yer_012: Optional[int]
