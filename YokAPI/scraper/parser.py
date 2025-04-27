@@ -107,11 +107,6 @@ class Parser():
 
         return r_
 
-
-
-
-
-    
     async def genel_blg_parser(self, osym_kod: int, year: int) -> GenelBilgiler:
         selectors_genel_blg = selectors["genel_blg"]
         
@@ -147,7 +142,6 @@ class Parser():
 
         return GenelBilgiler(**results)
     
-
     async def genel_blg_onlisans_parser(self, osym_kod: int, year: int) -> GenelBilgilerOnlisans:
         selectors_genel_blg = selectors["genel_blg_onlisans"]
         
@@ -285,8 +279,8 @@ class Parser():
         return Cinsiyet(
             osym_kod=osym_kod,
             year=year,
-            erkek={"sayi": results[0], "orn": results[1]},
-            kadin={"sayi": results[2], "orn": results[3]}
+            erkek={"sayi": results[2], "orn": results[3]},
+            kadin={"sayi": results[0], "orn": results[1]}
         )
 
     async def cograf_bolg_parser(self, osym_kod: int, year: int) -> CografiBolgeler:
