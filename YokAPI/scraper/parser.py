@@ -574,7 +574,7 @@ class Parser():
         
         tasks = [get_lise(lise_row) for lise_row in rows]
         liseler = await asyncio.gather(*tasks)
-        model_keys = ["isim", "toplam", "eski_mezun", "yeni_mezun"]
+        model_keys = ["isim", "toplam", "yeni_mezun", "eski_mezun"]
         liseler = [dict(zip(model_keys, lise)) for lise in liseler]
 
         return Liseler(
