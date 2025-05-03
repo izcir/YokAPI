@@ -24,6 +24,8 @@
 pip install YokAPI
 ```
 
+- Önlisanstaki hata düzeltilecek
+
 #### 📄 Örnek Kullanımlar
 ```python
 from YokAPI import Lisans, Onlisans
@@ -128,7 +130,6 @@ if __name__ == "__main__":
 ```
 
 ### ✔ Yapılacaklar 
-- [ ] Dokümantasyon düzenlenecek
 - [ ] Akademik YÖK API eklenecek
 - [ ] Model yapısı düzenlenecek
 
