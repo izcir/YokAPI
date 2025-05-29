@@ -31,7 +31,7 @@ class Fetcher:
         )
 
     async def year_control(self, year: int) -> str:
-        available_years = [2019, 2020, 2021, 2022, 2023, 2024]
+        available_years = [2022, 2023, 2024] # eski yıllar kaldırıldı -> [2019, 2020, 2021, 2022, 2023, 2024]
         year = int(year)
 
         if year not in available_years:
