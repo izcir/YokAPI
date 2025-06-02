@@ -24,8 +24,6 @@
 pip install YokAPI
 ```
 
-- Önlisanstaki hata düzeltilecek
-
 #### 📄 Örnek Kullanımlar
 ```python
 from YokAPI import Lisans, Onlisans

@@ -808,8 +808,8 @@ class Parser():
             cinsiyet=results[8],
             il=results[9]
         )
-    
-    async def yks_net_parser(self, osym_kod: int, year: int) -> YksNet:
+
+    async def yks_net_parser(self, osym_kod: int, year: int, onlisans: bool) -> YksNet:
         selectors_yks_net = selectors["yks_net"]
         rows = self.bs.select(selectors_yks_net["rows"])
         if rows == []:
@@ -843,16 +843,22 @@ class Parser():
         model_keys = ["ders", "net_012", "net_012_006"]
         yks_net_dict = [dict(zip(model_keys, net)) for net in yks_net[2:]]
 
-        if year == 2024 or 2023:
-            ort_obp_012 = yks_net[0][1]
-            ort_obp_012_006 = yks_net[0][2]
-            yerlesen_012 = yks_net[1][1]
-            yerlesen_012_006 = yks_net[1][2]
-        else:
+        if onlisans and year == 2023:
             ort_obp_012 = yks_net[1][1]
             ort_obp_012_006 = yks_net[1][2]
             yerlesen_012 = yks_net[0][1]
             yerlesen_012_006 = yks_net[0][2]
+        else:
+            if year == 2024 or year == 2023:
+                ort_obp_012 = yks_net[0][1]
+                ort_obp_012_006 = yks_net[0][2]
+                yerlesen_012 = yks_net[1][1]
+                yerlesen_012_006 = yks_net[1][2]
+            else:
+                ort_obp_012 = yks_net[1][1]
+                ort_obp_012_006 = yks_net[1][2]
+                yerlesen_012 = yks_net[0][1]
+                yerlesen_012_006 = yks_net[0][2]
             
 
         return YksNet(
