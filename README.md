@@ -130,6 +130,7 @@ if __name__ == "__main__":
 ### ✔ Yapılacaklar 
 - [ ] Akademik YÖK API eklenecek
 - [ ] Model yapısı düzenlenecek
+- [ ] Search kısmı eklenecek
 
 
 ## 📌 `Lisans` Fonksiyonlar ve Modeller <a name="Lisans"></a>
