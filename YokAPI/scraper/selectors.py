@@ -230,8 +230,6 @@ selectors = {
     "lise_grup_tip": {
         "genel_lise_rows": "table:nth-child(4) > tbody > tr",
         "meslek_lise_rows": "table:nth-child(5) > tbody > tr",
-        "genel_lise_2019_rows": "table:nth-child(5) > tbody > tr",
-        "meslek_lise_2019_rows": "table:nth-child(4) > tbody > tr",
         "datas":[
             {"name": "alan", "index": 1, "selector":"td:nth-child(1)", "type": "str"},
             {"name": "sayi", "index": 2, "selector":"td:nth-child(2)", "type": "int"},
@@ -313,16 +311,7 @@ selectors = {
             {"name": "yerlesen", "index": 2, "selector":"td:nth-child(3)", "type": "int"},
             {"name": "sira_012", "index": 2, "selector":"td:nth-child(4)", "type": "int"},
             {"name": "sira_012_006", "index": 2, "selector":"td:nth-child(5)", "type": "int"},    
-        ],
-        "sira_datas_2019":[
-            {"name": "kont_turu", "index": 1, "selector":"td:nth-child(1)", "type": "str"},
-            {"name": "kontenjan", "index": 1, "selector":"td:nth-child(2)", "type": "int"},
-            {"name": "yerlesen", "index": 1, "selector":"td:nth-child(3)", "type": "int"},
-            {"name": "sira_012", "index": 1, "selector":"td:nth-child(4)", "type": "int"},
-            
         ]
-
-
     },
     "son_profil": {
         "rows": "table > tbody > tr",

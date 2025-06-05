@@ -510,12 +510,8 @@ class Parser():
     async def lise_grup_tip_parser(self, osym_kod: int, year: int) -> LiseTip:
 
         selectors_lise_grup_tip = selectors["lise_grup_tip"]
-        genel_lise_rows = self.bs.select(
-            selectors_lise_grup_tip["genel_lise_2019_rows"] if year == 2019 else selectors_lise_grup_tip["genel_lise_rows"]
-        )
-        meslek_lise_rows = self.bs.select(
-            selectors_lise_grup_tip["meslek_lise_2019_rows"] if year == 2019 else selectors_lise_grup_tip["meslek_lise_rows"]
-        )
+        genel_lise_rows = self.bs.select(selectors_lise_grup_tip["genel_lise_rows"])
+        meslek_lise_rows = self.bs.select(selectors_lise_grup_tip["meslek_lise_rows"])
         
         genel_lise = []
         meslek_lise = []
@@ -748,10 +744,7 @@ class Parser():
         puan_results_dict = [dict(zip(model_keys_puan, puan_results[0:5]))]
         puan_results_dict.append(dict(zip(model_keys_puan, puan_results[5:10])))
 
-        if year == 2019:
-            sira_datas = selectors_taban_puan["sira_datas_2019"]
-        else:
-            sira_datas = selectors_taban_puan["sira_datas"]
+        sira_datas = selectors_taban_puan["sira_datas"]
         
         tasks = [
             self.async_select_one(
@@ -765,10 +758,10 @@ class Parser():
         ]
 
         sira_results = await asyncio.gather(*tasks)
-        if year == 2019: sira_results.append(None)
         model_keys_sira = ["kont_turu", "kont", "yerlesen", "sira_012", "sira_012_006"]
         sira_results_dict = [dict(zip(model_keys_sira, sira_results[0:5]))]
-        if year != 2019: sira_results_dict.append(dict(zip(model_keys_sira, sira_results[5:10])))
+  
+        sira_results_dict.append(dict(zip(model_keys_sira, sira_results[5:10])))
 
         return TabanPuanOnlisans(
             osym_kod=osym_kod,
