@@ -24,9 +24,9 @@ class Fetcher:
         }
 
     async def _create_session(self):
-        ssl_context = ssl.create_default_context(cafile=certifi.where())
+        # ssl_context = ssl.create_default_context(cafile=certifi.where())
         return aiohttp.ClientSession(
-            connector=aiohttp.TCPConnector(ssl=ssl_context),
+            connector=aiohttp.TCPConnector(ssl=False),
             headers=self._get_headers()
         )
 

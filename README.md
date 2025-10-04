@@ -29,6 +29,7 @@ from YokAPI import Lisans, Onlisans
 import asyncio
 
 async def main():
+    # Bölüm arama ve ÖSYM program kodu bulma için aşağıdaki CSV bölümüne bakınız.
     async with Lisans(program_id=108210665, year=2024) as lisans:
 
         r = await lisans.kontenjan() # -> Kontenjan
@@ -88,6 +89,8 @@ from YokAPI import Lisans, Onlisans
 import asyncio
 
 async def main():
+    # Bölüm arama ve ÖSYM program kodu bulma için aşağıdaki CSV bölümüne bakınız.
+
     lisans_1 = Lisans(program_id=108210665, year=2024)
     r = await lisans_1.kontenjan() # -> Kontenjan
     print(r.tubitak) # -> None # 0
@@ -106,13 +109,13 @@ if __name__ == "__main__":
 from YokAPI import Lisans, Onlisans
 import asyncio
 import aiohttp
-import certifi
-import ssl
+# import certifi
+# import ssl
 
 async def main():
-    ssl_context = ssl.create_default_context(cafile=certifi.where())
+    # ssl_context = ssl.create_default_context(cafile=certifi.where())
     session_ = aiohttp.ClientSession(
-        connector=aiohttp.TCPConnector(ssl=ssl_context), # ssl=False 
+        connector=aiohttp.TCPConnector(ssl=False),  # İsterseniz ssl_context kullanarak doğrulamayı açabilirsiniz.
         headers={
             "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/133.0.0.0 Safari/537.36"
         }        
@@ -126,10 +129,65 @@ if __name__ == "__main__":
     asyncio.run(main())
 ```
 
-### ✔ Yapılacaklar 
-- [ ] Akademik YÖK API eklenecek
-- [ ] Model yapısı düzenlenecek
-- [ ] Search kısmı eklenecek
+---
+
+## 🔎 Bölüm OSYM Kodu CSV’si (data/universities_departments.csv)
+
+YokAPI kullanıcılarının bölümlerin ÖSYM program kodunu (osym_kod / program_code) hızlıca bulup veri çekebilmesi için, ÖSYM’nin yayımladığı kaynaklardan derlenmiş toplu ve temizlenmiş bir CSV dosyası eklenmiştir: `data/universities_departments.csv`.
+
+- CSV sütunları:
+  - program_code (ÖSYM kodu)
+  - department_name (Bölüm adı)
+  - university_name (Üniversite adı)
+  - faculty_name (Fakülte adı)
+  - is_undergraduate (Lisans=True, Önlisans=False)
+  - years (ör. 2022,2023,2024)
+  - tags (İngilizce, KKTC, vb.)
+  - score_type (ör. SAY/SÖZ/EA/TYT)
+  - scholarship_type (ör. Ücretsiz/Burslu/%50 İndirimli)
+
+Kısa bir örnek satırlar:
+
+| program_code | department_name             | university_name        | faculty_name              | is_undergraduate | years           | tags | score_type | scholarship_type |
+|--------------|-----------------------------|------------------------|---------------------------|------------------|-----------------|------|------------|------------------|
+| 103390230    | Abaza Dili ve Edebiyatı     | DÜZCE ÜNİVERSİTESİ     | Fen-Edebiyat Fakültesi    | True             | 2024            |      | SÖZ        | Ücretsiz         |
+| 108690161    | Acil Durum ve Afet Yönetimi | PAMUKKALE ÜNİVERSİTESİ | Serinhisar Meslek Yüksekokulu            | False            | 2022,2023,2024  |      | TYT        | Ücretsiz         |
+
+Notlar ve öneriler:
+- Şu an YÖK Atlas’ta mevcut yıllar: 2022, 2023, 2024. Bir bölüm bazı yıllarda bulunmayabilir; istek atmadan önce CSV’deki `years` sütununu kontrol edip uygun yılı seçin.
+- Büyük boyutlu JSON’u repo’ya eklemedim; isterseniz `data/data_csv_to_json.py` ile CSV’yi üniversiteye göre gruplanmış JSON’a dönüştürüp kullanabilirsiniz.
+- YokAPI scraper ile üretilmiş daha detaylı ve temizlenmiş bir veri seti için: https://github.com/izcir/turkish-university-admissions-dataset
+
+### Hızlı kullanım örnekleri
+
+CSV’den osym_kod bulup YokAPI ile veri çekme (Lisans örneği):
+
+```python
+import pandas as pd
+from YokAPI import Lisans
+import asyncio
+
+async def run():
+    df = pd.read_csv("data/universities_departments.csv")
+
+    row = df[(df["university_name"] == "ONDOKUZ MAYIS ÜNİVERSİTESİ") &
+             (df["department_name"] == "Bilgisayar Mühendisliği") &
+             (df["is_undergraduate"] == True)].iloc[0]
+
+    program_id = int(row["program_code"]) # 108210665
+    years = str(row.get("years")).split(",") # -> ['2022', '2023', '2024']
+    year = years[-1] # -> 2024    
+
+    async with Lisans(program_id=program_id, year=year) as lisans:
+        genel = await lisans.genel_blg()
+        print(genel.toplam_kontenjan, genel.yer_012_son_sira)
+
+asyncio.run(run())
+```
+
+Önlisans bölümleri için benzer şekilde `is_undergraduate == False` filtreleyip `Onlisans` sınıfını kullanın.
+
+---
 
 
 ## 📌 `Lisans` Fonksiyonlar ve Modeller <a name="Lisans"></a>
@@ -318,500 +376,4 @@ if __name__ == "__main__":
 | `t_yer`            | `int`     | Toplam yerleşen                   |
 | `ek_yer`           | `int`     | Ek yerleşen                       |
 
-
-### [`ModelDetay`](#modeldetay)
-| **Alan**  | **Tür**   | **Bilgi**       |
-|-----------|----------|----------------|
-| `sayi`    | `int`    | Sayısal değer  |
-| `orn`     | `float`  | Oran değeri    |
-
-### [`Cinsiyet`](#cinsiyet)
-| **Alan**  | **Tür**       | **Bilgi**                       |
-|-----------|--------------|--------------------------------|
-| `osym_kod` | `int`       | ÖSYM program kodu             |
-| `year`     | `int`       | Yıl                            |
-| `erkek`    | [`ModelDetay`](#modeldetay) | Erkek aday verileri  |
-| `kadin`    | [`ModelDetay`](#modeldetay) | Kadın aday verileri  |
-
-### [`Bolgeler`](#bolgeler)
-| **Alan**              | **Tür**                 | **Bilgi**                      |
-|----------------------|------------------------|--------------------------------|
-| `toplam`            | [`ModelDetay`](#modeldetay)  | Genel toplam verileri        |
-| `akdeniz`           | [`ModelDetay`](#modeldetay)  | Akdeniz bölgesi verileri     |
-| `dogu_anadolu`      | [`ModelDetay`](#modeldetay)  | Doğu Anadolu bölgesi verileri |
-| `ege`               | [`ModelDetay`](#modeldetay)  | Ege bölgesi verileri         |
-| `guneydogu_anadolu` | [`ModelDetay`](#modeldetay)  | Güneydoğu Anadolu verileri  |
-| `ic_anadolu`        | [`ModelDetay`](#modeldetay)  | İç Anadolu bölgesi verileri  |
-| `karadeniz`         | [`ModelDetay`](#modeldetay)  | Karadeniz bölgesi verileri   |
-| `marmara`           | [`ModelDetay`](#modeldetay)  | Marmara bölgesi verileri     |
-| `belli_degil`       | [`ModelDetay`](#modeldetay)  | Bölgesi belli olmayan veriler |
-
-### [`ModelDetayCinsiyet`](#modeldetaycinsiyet)
-| **Alan**  | **Tür**   | **Bilgi**                          |
-|-----------|----------|----------------------------------|
-| `sayi`    | `int`    | Toplam sayısal değer            |
-| `orn`     | `float`  | Oran değeri                     |
-| `erkek`   | `int`    | Erkek sayısı                    |
-| `kadin`   | `int`    | Kadın sayısı                    |
-
-### [`SehirDurum`](#sehirdurum)
-| **Alan**       | **Tür**                                  | **Bilgi**                     |
-|---------------|-----------------------------------------|-------------------------------|
-| `toplam`      | [`ModelDetayCinsiyet`](#modeldetaycinsiyet) | Toplam şehir verileri       |
-| `ayni`        | [`ModelDetayCinsiyet`](#modeldetaycinsiyet) | Aynı şehirde kalanlar       |
-| `farkli`      | [`ModelDetayCinsiyet`](#modeldetaycinsiyet) | Farklı şehire gidenler      |
-| `belli_degil` | [`ModelDetayCinsiyet`](#modeldetaycinsiyet) | Şehir bilgisi belli olmayanlar |
-
-### [`CografiBolgeler`](#cografibolgeler)
-| **Alan**    | **Tür**                        | **Bilgi**             |
-|------------|---------------------------------|-----------------------|
-| `osym_kod` | `int`                           | ÖSYM program kodu     |
-| `year`     | `int`                           | Yıl                   |
-| `bolge`    | [`Bolgeler`](#bolgeler)         | Coğrafi bölge verileri |
-| `sehir`    | [`SehirDurum`](#sehirdurum)     | Şehir bazlı veriler    |
-
-### [`Il`](#il)
-| **Alan**  | **Tür**   | **Bilgi**         |
-|-----------|----------|-------------------|
-| `isim`    | `str`    | Şehir adı         |
-| `sayi`    | `int`    | Sayısal değer     |
-| `orn`     | `float`  | Oran değeri       |
-
-### [`Iller`](#iller)
-| **Alan**    | **Tür**          | **Bilgi**               |
-|------------|-----------------|-------------------------|
-| `osym_kod` | `int`            | ÖSYM program kodu       |
-| `year`     | `int`            | Yıl                     |
-| `sehirler` | _list[_[`Il`](#il)_]_       | Şehir bazlı detaylar    |
-
-### [`OgrenimDurumu`](#ogrenimdurumu)
-| **Alan**      | **Tür**                    | **Bilgi**                |
-|--------------|---------------------------|--------------------------|
-| `osym_kod`   | `int`                      | ÖSYM program kodu        |
-| `year`       | `int`                      | Yıl                      |
-| `toplam`     | [`ModelDetay`](#modeldetay) | Toplam kayıtlar          |
-| `lise_yeni`  | [`ModelDetay`](#modeldetay) | Yeni lise mezunları      |
-| `lise_mezun` | [`ModelDetay`](#modeldetay) | Önceki lise mezunları    |
-| `uni_ogr`    | [`ModelDetay`](#modeldetay) | Üniversite öğrencileri   |
-| `uni_mezun`  | [`ModelDetay`](#modeldetay) | Üniversite mezunları     |
-| `diger`      | [`ModelDetay`](#modeldetay) | Diğer kategoriler        |
-
-### [`YilModelDetay`](#yilmodeldetay)
-| **Alan**  | **Tür**   | **Bilgi**         |
-|-----------|----------|-------------------|
-| `yil`     | `str`    | Mezuniyet yılı    |
-| `sayi`    | `int`    | Sayısal değer     |
-| `orn`     | `float`  | Oran değeri       |
-
-### [`MezunYil`](#mezunyil)
-| **Alan**    | **Tür**                   | **Bilgi**               |
-|------------|--------------------------|-------------------------|
-| `osym_kod` | `int`                     | ÖSYM program kodu       |
-| `year`     | `int`                     | Yıl                     |
-| `yillar`   | _list[_[`YilModelDetay`](#yilmodeldetay)_]_   | Mezuniyet yılları       |
-
-### [`LiseAlanModelDetay`](#lisealanmodeldetay)
-| **Alan**  | **Tür**   | **Bilgi**         |
-|-----------|----------|-------------------|
-| `alan`    | `str`    | Lise alan adı     |
-| `sayi`    | `int`    | Sayısal değer     |
-| `orn`     | `float`  | Oran değeri       |
-
-### [`LiseAlan`](#lisealan)
-| **Alan**    | **Tür**                       | **Bilgi**               |
-|------------|------------------------------|-------------------------|
-| `osym_kod` | `int`                         | ÖSYM program kodu       |
-| `year`     | `int`                         | Yıl                     |
-| `alanlar`  | _list[_[`LiseAlanModelDetay`](#lisealanmodeldetay)_]_    | Lise alan detayları     |
-
-### [`LiseTip`](#lisetip)
-| **Alan**       | **Tür**                                                 | **Bilgi**               |
-|---------------|-----------------------------------------------------|-------------------------|
-| `osym_kod`    | `int`                                               | ÖSYM program kodu       |
-| `year`        | `int`                                               | Yıl                     |
-| `genel_lise`  | _list[_[`LiseAlanModelDetay`](#lisealanmodeldetay)_]_   | Genel lise detayları    |
-| `meslek_lise` | _list[_[`LiseAlanModelDetay`](#lisealanmodeldetay)_]_  | Meslek lisesi detayları |
-
-### [`LiseModelDetay`](#lisemodeldetay)
-| **Alan**      | **Tür**      | **Bilgi**                   |
-|---------------|--------------|-----------------------------|
-| `isim`        | `str`        | Lise ismi                  |
-| `toplam`      | `int`        | Toplam öğrenci sayısı      |
-| `yeni_mezun`  | `int`        | Yeni mezun öğrenci sayısı  |
-| `eski_mezun`  | `float`      | Eski mezunların oranı      |
-
-### [`Liseler`](#liseler)
-| **Alan**    | **Tür**                                         | **Bilgi**               |
-|------------|---------------------------------------------|-------------------------|
-| `osym_kod` | `int`                                     | ÖSYM program kodu       |
-| `year`     | `int`                                     | Yıl                     |
-| `liseler`  | _list[_[`LiseModelDetay`](#lisemodeldetay)_]_ | Lise bazlı detaylar     |
-
-### [`LiseYerlesme`](#liseyerlesme)
-| **Alan**     | **Tür**      | **Bilgi**                |
-|--------------|--------------|--------------------------|
-| `kont_turu`  | `str`        | Kontenjan türü           |
-| `isim`       | `str`        | Lise ismi                |
-
-
-### [`OkulBirinciKontenjan`](#okulbirincikontenjan)
-| **Alan**       | **Tür**                                        | **Bilgi**                     |
-|---------------|------------------------------------------|-----------------------------|
-| `osym_kod`    | `int`                                    | ÖSYM program kodu           |
-| `year`        | `int`                                    | Yıl                         |
-| `toplam`      | `int`                                    | Toplam kontenjan            |
-| `genel`       | `int`                                    | Genel kontenjan             |
-| `okul_bir`    | `int`                                    | Okul birincisi kontenjanı   |
-| `sehit_gazi`  | `int`                                    | Şehit/gazi yakını kontenjanı |
-| `depremzede`  | `float`                                  | Depremzede kontenjanı       |
-| `kadin_34yas` | `int`                                    | 34 yaş üstü kadın kontenjanı |
-| `liseler`     | _list[_[`LiseYerlesme`](#liseyerlesme)_]_   | Lise yerleşme detayları     |
-
-### `PuanModelDetay`
-| **Alan**      | **Tür**      | **Bilgi**                           |
-|---------------|--------------|-------------------------------------|
-| `kont_turu`   | `str`        | Kontenjan türü                     |
-| `kont`        | `int`        | Kontenjan sayısı                   |
-| `yerlesen`    | `int`        | Yerleşen öğrenci sayısı            |
-| `puan`        | `float`      | Puan değeri                        |
-
-### `SiraModelDetay`
-| **Alan**        | **Tür**      | **Bilgi**                           |
-|-----------------|--------------|-------------------------------------|
-| `kont_turu`     | `str`        | Kontenjan türü                     |
-| `kont`          | `int`        | Kontenjan sayısı                   |
-| `yerlesen`      | `int`        | Yerleşen öğrenci sayısı            |
-| `sira_012`      | `int`        | 0.12 katsayılı yerleşen sıra       |
-| `sira_012_006`  | `int`        | 0.18 katsayılı yerleşen sıra       |
-
-
-### [`TabanPuan`](#tabanpuan)
-| **Alan**    | **Tür**                                          | **Bilgi**               |
-|------------|----------------------------------------------|-------------------------|
-| `osym_kod` | `int`                                        | ÖSYM program kodu       |
-| `year`     | `int`                                        | Yıl                     |
-| `puanlar`  | _list[_[`PuanModelDetay`](#puanmodeldetay)_]_  | Puan detayları          |
-| `siralar`  | _list[_[`SiraModelDetay`](#siramodeldetay)_]_   | Başarı sıraları         |
-
-### `PuanOnlisansModelDetay`
-| **Alan**        | **Tür**      | **Bilgi**                           |
-|-----------------|--------------|-------------------------------------|
-| `kont_turu`     | `str`        | Kontenjan türü                     |
-| `kont`          | `int`        | Kontenjan sayısı                   |
-| `yerlesen`      | `int`        | Yerleşen öğrenci sayısı            |
-| `puan_012`      | `float`      | 0.12 katsayılı puan                |
-| `puan_012_006`  | `float`      | 0.18 katsayılı puan                |
-
-
-### [`TabanPuanOnlisans`](#tabanpuanonlisans)
-| **Alan**    | **Tür**                                                  | **Bilgi**               |
-|------------|------------------------------------------------------|-------------------------|
-| `osym_kod` | `int`                                                | ÖSYM program kodu       |
-| `year`     | `int`                                                | Yıl                     |
-| `puanlar`  | _list[_[`PuanOnlisansModelDetay`](#puanonlisansmodeldetay)_]_ | Önlisans puan detayları |
-| `siralar`  | _list[_[`SiraModelDetay`](#siramodeldetay)_]_            | Başarı sıraları         |
-
-### [`SonProfil`](#sonprofil)
-| **Alan**         | **Tür**     | **Bilgi**                 |
-|-----------------|---------|-------------------------|
-| `osym_kod`      | `int`   | ÖSYM program kodu       |
-| `year`          | `int`   | Yıl                     |
-| `ogrnm_durumu`  | `str`   | Öğrenim durumu          |
-| `mezun_yil`     | `int`   | Mezuniyet yılı          |
-| `lise_alan`     | `str`   | Lise alanı              |
-| `puan`          | `float` | Puan                    |
-| `sira`          | `int`   | Sıralama                |
-| `katsayi`       | `float` | Katsayı                 |
-| `obp`           | `float` | OBP puanı               |
-| `dn`            | `float` | Diploma notu            |
-| `cinsiyet`      | `str`   | Cinsiyet                |
-| `il`           | `str`   | İl                      |
-
-### [`DersModelDetay`](#dersmodeldetay)
-| **Alan**     | **Tür**      | **Bilgi**                    |
-|--------------|--------------|------------------------------|
-| `ders`       | `str`        | Ders adı                     |
-| `net_012`    | `float`      | 0.12 katsayılı net           |
-| `net_012_006`| `float`      | 0.18 katsayılı net           |
-
-### [`YksNet`](#yksnet)
-| **Alan**            | **Tür**      | **Bilgi**                              |
-|---------------------|--------------|----------------------------------------|
-| `osym_kod`          | `int`        | ÖSYM program kodu                     |
-| `year`              | `int`        | Yıl                                    |
-| `yerlesen_012`      | `float`      | 0.12 katsayılı yerleşen oranı         |
-| `yerlesen_012_006`  | `float`      | 0.18 katsayılı yerleşen oranı         |
-| `ort_obp_012`       | `float`      | 0.12 katsayılı ortalama OBP           |
-| `ort_obp_012_006`   | `float`      | 0.18 katsayılı ortalama OBP           |
-| `dersler`           | _list[_[`DersModelDetay`](#dersmodeldetay)_]_ | Derslerin detayları           |
-
-### [`YksPuanModelDetay`](#ykspuanmodeldetay)
-| **Alan**          | **Tür**      | **Bilgi**                              |
-|-------------------|--------------|----------------------------------------|
-| `yer_012`         | `int`        | 0.12 katsayılı yerleşen sayısı        |
-| `yer_012_006`     | `int`        | 0.18 katsayılı yerleşen sayısı        |
-| `obp_012`         | `float`      | 0.12 katsayılı OBP                    |
-| `obp_012_006`     | `float`      | 0.18 katsayılı OBP                    |
-| `tyt_012`         | `float`      | 0.12 katsayılı TYT puanı              |
-| `tyt_012_006`     | `float`      | 0.18 katsayılı TYT puanı              |
-
-### [`YksPuan`](#ykspuan)
-| **Alan**        | **Tür**      | **Bilgi**                              |
-|-----------------|--------------|----------------------------------------|
-| `osym_kod`      | `int`        | ÖSYM program kodu                     |
-| `year`          | `int`        | Yıl                                    |
-| `ort_puan`      | _list[_[`YksPuanModelDetay`](#ykspuanmodeldetay)_]_ | Ortalama puanlar                     | 
-| `dusuk_puan`    | _list[_[`YksPuanModelDetay`](#ykspuanmodeldetay)_]_ | Düşük puanlar                        |
-
-### [`YksSiraModelDetay`](#ykssiramodeldetay)
-| **Alan**        | **Tür**      | **Bilgi**                           |
-|-----------------|--------------|-------------------------------------|
-| `yer_012`       | `int`        | 0.12 katsayılı yerleşen sayısı      |
-| `yer_012_006`   | `int`        | 0.18 katsayılı yerleşen sayısı      |
-| `tyt_012`       | `int`        | TYT 0.12 katsayılı yerleşen sayısı  |
-| `tyt_012_006`   | `int`        | TYT 0.18 katsayılı yerleşen sayısı  |
-
-### [`YksSira`](#ykssira)
-| **Alan**        | **Tür**      | **Bilgi**                           |
-|-----------------|--------------|-------------------------------------|
-| `osym_kod`      | `int`        | ÖSYM kodu                          |
-| `year`          | `int`        | Yıl                                 |
-| `ort_sira`      | _list[_[`YksSiraModelDetay`](#ykssiramodeldetay)_]_  | Ortalama sıralama detayları     |
-| `dusuk_sira`    | _list[_[`YksSiraModelDetay`](#ykssiramodeldetay)_]_  | Düşük sıralama detayları       |
-
-### [`TercihSiraDetay`](#tercihsiradetay)
-| **Alan**        | **Tür**      | **Bilgi**                           |
-|-----------------|--------------|-------------------------------------|
-| `tercih_1`      | `int`        | 1. tercih sırası                    |
-| `tercih_2`      | `int`        | 2. tercih sırası                    |
-| `tercih_3`      | `int`        | 3. tercih sırası                    |
-| `tercih_4`      | `int`        | 4. tercih sırası                    |
-| `tercih_5`      | `int`        | 5. tercih sırası                    |
-| `tercih_6`      | `int`        | 6. tercih sırası                    |
-| `tercih_7`      | `int`        | 7. tercih sırası                    |
-| `tercih_8`      | `int`        | 8. tercih sırası                    |
-| `tercih_9`      | `int`        | 9. tercih sırası                    |
-| `tercih_10_sonra` | `int`      | 10. tercih sonrası                  |
-
-### [`TercihIstatistik`](#tercihistatistik)
-| **Alan**        | **Tür**      | **Bilgi**                           |
-|-----------------|--------------|-------------------------------------|
-| `osym_kod`      | `int`        | ÖSYM kodu                          |
-| `year`          | `int`        | Yıl                                 |
-| `toplam`        | `int`        | Toplam tercih sayısı               |
-| `aday`          | `float`      | Aday sayısı                        |
-| `ort_tercih`    | `float`      | Ortalama tercih sayısı             |
-| `ilk_bir`       | `int`        | İlk tercih yapılan sayısı          |
-| `ilk_bir_orn`   | `float`      | İlk tercih oranı                   |
-| `ilk_uc`        | `int`        | İlk üç tercih yapılan sayısı       |
-| `ilk_uc_orn`    | `float`      | İlk üç tercih oranı                |
-| `ilk_dokuz`     | `int`        | İlk dokuz tercih yapılan sayısı    |
-| `ilk_dokuz_orn` | `float`      | İlk dokuz tercih oranı             |
-| `tercihler`     | _list[_[`TercihSiraDetay`](#tercihsiradetay)_]_ | Tercih sırası detayları        | 
-
-### [`OrtTercihDetay`](#orttercihdetay)
-| **Alan**        | **Tür**      | **Bilgi**                           |
-|-----------------|--------------|-------------------------------------|
-| `tercih_1`      | `int`        | 1. tercih sırası                    |
-| `tercih_2`      | `int`        | 2. tercih sırası                    |
-| `tercih_3`      | `int`        | 3. tercih sırası                    |
-| `tercih_4`      | `int`        | 4. tercih sırası                    |
-| `tercih_5`      | `int`        | 5. tercih sırası                    |
-| `tercih_6`      | `int`        | 6. tercih sırası                    |
-| `tercih_7`      | `int`        | 7. tercih sırası                    |
-| `tercih_8`      | `int`        | 8. tercih sırası                    |
-| `tercih_9`      | `int`        | 9. tercih sırası                    |
-| `tercih_10`     | `int`        | 10. tercih sırası                   |
-| `tercih_11`     | `int`        | 11. tercih sırası                   |
-| `tercih_12`     | `int`        | 12. tercih sırası                   |
-| `tercih_13`     | `int`        | 13. tercih sırası                   |
-| `tercih_14`     | `int`        | 14. tercih sırası                   |
-| `tercih_15`     | `int`        | 15. tercih sırası                   |
-| `tercih_16`     | `int`        | 16. tercih sırası                   |
-| `tercih_17`     | `int`        | 17. tercih sırası                   |
-| `tercih_18`     | `int`        | 18. tercih sırası                   |
-| `tercih_19`     | `int`        | 19. tercih sırası                   |
-| `tercih_20`     | `int`        | 20. tercih sırası                   |
-| `tercih_21`     | `int`        | 21. tercih sırası                   |
-| `tercih_22`     | `int`        | 22. tercih sırası                   |
-| `tercih_23`     | `int`        | 23. tercih sırası                   |
-| `tercih_24`     | `int`        | 24. tercih sırası                   |
-
-### [`OrtTercih`](#orttercih)
-| **Alan**        | **Tür**      | **Bilgi**                           |
-|-----------------|--------------|-------------------------------------|
-| `osym_kod`      | `int`        | ÖSYM kodu                          |
-| `year`          | `int`        | Yıl                                 |
-| `toplam`        | `int`        | Toplam tercih sayısı               |
-| `ilk_bir`       | `int`        | İlk tercih yapılan sayısı          |
-| `ilk_bir_orn`   | `float`      | İlk tercih oranı                   |
-| `ilk_uc`        | `int`        | İlk üç tercih yapılan sayısı       |
-| `ilk_uc_orn`    | `float`      | İlk üç tercih oranı                |
-| `ilk_on`        | `int`        | İlk on tercih yapılan sayısı       |
-| `ilk_on_orn`    | `float`      | İlk on tercih oranı                |
-| `ort_tercih`    | `float`      | Ortalama tercih sayısı             |
-| `tercihler`     | _list[_[`OrtTercihDetay`](#orttercihdetay)_]_ | Tercih sırası detayları         | 
-
-### [`TercihGenel`](#tercihgenel)
-| **Alan**         | **Tür**      | **Bilgi**                          |
-|------------------|--------------|------------------------------------|
-| `osym_kod`       | `int`        | ÖSYM kodu                         |
-| `year`           | `int`        | Yıl                                |
-| `genel`          | `int`        | Genel tercih sayısı               |
-| `t_tercih`       | `int`        | Tam tercih sayısı                 |
-| `k_tercih`       | `int`        | Kayıtlı tercih sayısı             |
-| `bos_tercih`     | `int`        | Boş tercih sayısı                 |
-| `ort_tercih`     | `int`        | Ortalama tercih sayısı            |
-
-### [`TercihUniTur`](#tercihunitur)
-| **Alan**         | **Tür**      | **Bilgi**                          |
-|------------------|--------------|------------------------------------|
-| `osym_kod`       | `int`        | ÖSYM kodu                         |
-| `year`           | `int`        | Yıl                                |
-| `devlet`         | `int`        | Devlet üniversite tercih sayısı   |
-| `vakif`          | `int`        | Vakıf üniversite tercih sayısı    |
-| `kibris`         | `int`        | Kıbrıs üniversite tercih sayısı   |
-| `yabanci`        | `int`        | Yabancı üniversite tercih sayısı  |
-
-### [`UniModelDetay`](#unimodeldetay)
-| **Alan**         | **Tür**      | **Bilgi**                          |
-|------------------|--------------|------------------------------------|
-| `isim`           | `str`        | Üniversite ismi                   |
-| `sayi`           | `int`        | Üniversiteye yapılan başvuru sayısı |
-
-### [`TercihUni`](#tercihuni)
-| **Alan**         | **Tür**      | **Bilgi**                          |
-|------------------|--------------|------------------------------------|
-| `osym_kod`       | `int`        | ÖSYM kodu                         |
-| `year`           | `int`        | Yıl                                |
-| `devlet`         | _list[_[`UniModelDetay`](#unimodeldetay)_]_ | Devlet üniversite detayları   | 
-| `vakif`          | _list[_[`UniModelDetay`](#unimodeldetay)_]_ | Vakıf üniversite detayları    |
-| `kibris`         | _list[_[`UniModelDetay`](#unimodeldetay)_]_ | Kıbrıs üniversite detayları   |
-| `yabanci`        | _list[_[`UniModelDetay`](#unimodeldetay)_]_ | Yabancı üniversite detayları  |
-
-### [`IlModelDetay`](#ilmodeldetay)
-| **Alan**         | **Tür**      | **Bilgi**                          |
-|------------------|--------------|------------------------------------|
-| `isim`           | `str`        | İl ismi                           |
-| `sayi`           | `int`        | İl bazındaki tercihlerin sayısı   |
-
-### [`TercihIl`](#tercihil)
-| **Alan**         | **Tür**      | **Bilgi**                          |
-|------------------|--------------|------------------------------------|
-| `osym_kod`       | `int`        | ÖSYM kodu                         |
-| `year`           | `int`        | Yıl                                |
-| `iller`          | _list[_[`IlModelDetay`](#ilmodeldetay)_]_ | İllerle ilgili tercih detayları| 
-
-### [`TercihFark`](#tercihfark)
-| **Alan**         | **Tür**      | **Bilgi**                          |
-|------------------|--------------|------------------------------------|
-| `osym_kod`       | `int`        | ÖSYM kodu                         |
-| `year`           | `int`        | Yıl                                |
-| `ayni`           | `int`        | Ayni tercihler                    |
-| `farkli`         | `int`        | Farklı tercihler                  |
-| `kibris`         | `int`        | Kıbrıs tercihler                  |
-| `onlisans`       | `int`        | Ön lisans tercihler               |
-| `yabanci`        | `int`        | Yabancı tercihler                 |
-
-### [`TercihFarkOnlisans`](#tercihfarkonlisans)
-| **Alan**         | **Tür**      | **Bilgi**                          |
-|------------------|--------------|------------------------------------|
-| `osym_kod`       | `int`        | ÖSYM kodu                         |
-| `year`           | `int`        | Yıl                                |
-| `ayni`           | `int`        | Ayni tercihler                    |
-| `farkli`         | `int`        | Farklı tercihler                  |
-| `kibris`         | `int`        | Kıbrıs tercihler                  |
-| `lisans`         | `int`        | Lisans tercihler                  |
-| `yabanci`        | `int`        | Yabancı tercihler                 |
-
-### [`ProgramModelDetay`](#programmodeldetay)
-| **Alan**         | **Tür**      | **Bilgi**                          |
-|------------------|--------------|------------------------------------|
-| `isim`           | `str`        | Program ismi                      |
-| `sayi`           | `int`        | Program tercihlerinin sayısı      |
-
-### [`TercihProgram`](#tercihprogram)
-| **Alan**         | **Tür**      | **Bilgi**                          |
-|------------------|--------------|------------------------------------|
-| `osym_kod`       | `int`        | ÖSYM kodu                         |
-| `year`           | `int`        | Yıl                                |
-| `programlar`     | _list[_[`ProgramModelDetay`](#programmodeldetay)_]_ | Program detayları     | 
-
-### [`KosulModelDetay`](#kosulmodeldetay)
-| **Alan**         | **Tür**      | **Bilgi**                          |
-|------------------|--------------|------------------------------------|
-| `no`             | `int`        | Kosul numarası                    |
-| `aciklama`       | `str`        | Kosul açıklaması                  |
-
-### [`YerlesmeKosul`](#yerlesmekosul)
-| **Alan**         | **Tür**      | **Bilgi**                          |
-|------------------|--------------|------------------------------------|
-| `osym_kod`       | `int`        | ÖSYM kodu                         |
-| `year`           | `int`        | Yıl                                |
-| `kosullar`       | _list[_[`KosulModelDetay`](#kosulmodeldetay)_]_ | Kosul detayları         | 
-
-### [`OgretimUyesi`](#ogretimuyesi)
-| **Alan**         | **Tür**      | **Bilgi**                          |
-|------------------|--------------|------------------------------------|
-| `osym_kod`       | `int`        | ÖSYM kodu                         |
-| `year`           | `int`        | Yıl                                |
-| `prof`           | `int`        | Profesör sayısı                   |
-| `docent`         | `int`        | Doçent sayısı                     |
-| `dou`            | `int`        | Dr. Öğretim Üyesi sayısı          |
-| `toplam`         | `int`        | Toplam öğretim üyesi sayısı       |
-
-### [`KayitliOgrenci`](#kayitliogrenci)
-| **Alan**         | **Tür**      | **Bilgi**                          |
-|------------------|--------------|------------------------------------|
-| `osym_kod`       | `int`        | ÖSYM kodu                         |
-| `year`           | `int`        | Yıl                                |
-| `toplam`         | `int`        | Toplam öğrenci sayısı             |
-| `toplam_orn`     | `float`      | Toplam öğrenci oranı              |
-| `kiz`            | `int`        | Kız öğrenci sayısı                |
-| `kiz_orn`        | `float`      | Kız öğrenci oranı                 |
-| `erkek`          | `int`        | Erkek öğrenci sayısı              |
-| `erkek_orn`      | `float`      | Erkek öğrenci oranı               |
-
-### [`MezunYilModelDetay`](#mezunyilmodeldetay)
-| **Alan**         | **Tür**      | **Bilgi**                          |
-|------------------|--------------|------------------------------------|
-| `yil`            | `str`        | Mezuniyet yılı                     |
-| `toplam`         | `int`        | Toplam mezun sayısı               |
-| `erkek`          | `int`        | Erkek mezun sayısı                |
-| `kiz`            | `int`        | Kız mezun sayısı                  |
-
-### [`MezunOgrenci`](#mezunogrenci)
-| **Alan**         | **Tür**      | **Bilgi**                          |
-|------------------|--------------|------------------------------------|
-| `osym_kod`       | `int`        | ÖSYM kodu                         |
-| `year`           | `int`        | Yıl                                |
-| `yillar`         | _list[_[`MezunYilModelDetay`](#mezunyilmodeldetay)_]_ | Mezuniyet yılı detayları  | 
-
-### [`DegisimModelDetay`](#degisimmodeldetay)
-| **Alan**         | **Tür**      | **Bilgi**                          |
-|------------------|--------------|------------------------------------|
-| `program`        | `str`        | Program adı                       |
-| `giden`          | `int`        | Giden öğrenci sayısı              |
-| `gelen`          | `int`        | Gelen öğrenci sayısı              |
-
-### [`DegisimOgrenci`](#degisimogrenci)
-| **Alan**         | **Tür**      | **Bilgi**                          |
-|------------------|--------------|------------------------------------|
-| `osym_kod`       | `int`        | ÖSYM kodu                         |
-| `year`           | `int`        | Yıl                                |
-| `degisimler`     | _list[_[`DegisimModelDetay`](#degisimmodeldetay)_]_ | Öğrenci değişim detayları      | 
-
-### [`YatayGecisModelDetay`](#yataygecismodeldetay)
-| **Alan**         | **Tür**      | **Bilgi**                          |
-|------------------|--------------|------------------------------------|
-| `madde`          | `str`        | Yatay geçiş ile ilgili madde       |
-| `once`           | `int`        | Önceki öğrenci sayısı             |
-| `simdi`          | `int`        | Şu anki öğrenci sayısı            |
-
-### [`YatayGecis`](#yataygecis)
-| **Alan**         | **Tür**      | **Bilgi**                          |
-|------------------|--------------|------------------------------------|
-| `osym_kod`       | `int`        | ÖSYM kodu                         |
-| `year`           | `int`        | Yıl                                |
-| `gelen`          | _list[_[`YatayGecisModelDetay`](#yataygecismodeldetay)_]_ | Gelen öğrenciler için detaylar   | 
-| `giden`          | _list[_[`YatayGecisModelDetay`](#yataygecismodeldetay)_]_ | Giden öğrenciler için detaylar   |
+...existing code...
