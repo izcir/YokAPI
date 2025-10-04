@@ -17,10 +17,11 @@ setup(
     ],
     python_requires=">=3.10",
     install_requires=[
-        "aiohttp==3.11.13",
-        "certifi==2025.1.31",
+        "aiohttp==3.12.15",
+        "certifi==2025.8.3",
         "bs4==0.0.2",
-        "pydantic==2.10.6"    
+        "pydantic==2.10.6",
+        "pandas==2.2.3"
     ],
     license="MIT"
 )
