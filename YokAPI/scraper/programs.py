@@ -274,7 +274,7 @@ class Lisans(BaseProgram):
             self.year, 
             self.get_url("yks_net")
         )
-        return await Parser(html).yks_net_parser(self.program_id, self.year)
+        return await Parser(html).yks_net_parser(self.program_id, self.year, onlisans=False)
 
 
 
