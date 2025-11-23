@@ -31,13 +31,13 @@ class Fetcher:
         )
 
     async def year_control(self, year: int) -> str:
-        available_years = [2022, 2023, 2024] # eski yıllar kaldırıldı -> [2019, 2020, 2021, 2022, 2023, 2024]
+        available_years = [2022, 2023, 2024, 2025] # eski yıllar kaldırıldı -> [2019, 2020, 2021, 2022, 2023, 2024] # 2025 eklendi
         year = int(year)
 
         if year not in available_years:
             raise ValueError(f"Geçersiz değer: {year}. Yıl sadece {available_years} yıllarından biri olabilir.")
         
-        return "" if year == 2024 else f"{year}/"
+        return "" if year == 2025 else f"{year}/"
 
     def return_url(self, year_path: str, end_url: str) -> str:
         return f"{self.BASE_URL}/{year_path}{end_url}"
