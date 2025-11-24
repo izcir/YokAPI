@@ -49,7 +49,10 @@ class Parser():
             elif r_ == "%":
                 r_ = None
             else:
-                r_ = float((r_.replace("%", "")).replace(",", "."))
+                if r_ == "%1.000,0": # özel durum
+                    r_ = 100.0
+                else:
+                    r_ = float((r_.replace("%", "")).replace(",", "."))
 
         elif ek_yer:
             if "olmamıştır" in r_:
@@ -170,7 +173,7 @@ class Parser():
             parse_table(selectors_genel_blg["table1"]),
             parse_table(selectors_genel_blg["table2"]),
             parse_table(selectors_genel_blg["table3"]),
-            parse_table(selectors_genel_blg["table4"]) if year != 2024 else parse_table(selectors_genel_blg["table4_2024"]),
+            parse_table(selectors_genel_blg["table4"]) if year not in [2024, 2025] else parse_table(selectors_genel_blg["table4_2024"]),
         ]
 
         results = {"osym_kod": osym_kod, "year": year}
@@ -263,6 +266,14 @@ class Parser():
         selectors_cins = selectors["cinsiyet"]
         base_selector = f"table > {selectors_cins['rows']}"
         rows = self.bs.select(base_selector)
+
+        if rows == []:
+            return Cinsiyet(
+                osym_kod=osym_kod,
+                year=year,
+                erkek={"sayi":None, "orn":None},
+                kadin={"sayi":None, "orn":None}
+            )
 
         tasks = [
             self.async_select_one(
@@ -773,6 +784,21 @@ class Parser():
     async def son_profil_parser(self, osym_kod: int, year: int) -> SonProfil:
         selectors_son_profil = selectors["son_profil"]
         rows = self.bs.select(selectors_son_profil["rows"])
+        if rows == []:
+            return SonProfil(
+                osym_kod=osym_kod,
+                year=year,
+                ogrnm_durumu=None,
+                mezun_yil=None,
+                lise_alan=None,
+                puan=None,
+                sira=None,
+                katsayi=None,
+                obp=None,
+                dn=None,
+                cinsiyet=None,
+                il=None
+            )
         
         tasks = [
             self.async_select_one(
@@ -842,7 +868,7 @@ class Parser():
             yerlesen_012 = yks_net[0][1]
             yerlesen_012_006 = yks_net[0][2]
         else:
-            if year == 2024 or year == 2023:
+            if year == 2025 or year == 2024 or year == 2023:
                 ort_obp_012 = yks_net[0][1]
                 ort_obp_012_006 = yks_net[0][2]
                 yerlesen_012 = yks_net[1][1]
@@ -1009,18 +1035,22 @@ class Parser():
 
             tercih_list = await asyncio.gather(*table3_tasks)
 
-        table1_tasks = [
-            self.async_select_one(
-                table1_rows[data["index"] - 1],
-                selector=f"{data['selector']}",
-                int_=data["type"] == "int",
-                float_=data["type"] == "float",
-                yuzde=data["type"] == "yuzde",
-                ek_yer=False
-            ) for data in table1_datas
+        if table1_rows != []:
+            table1_tasks = [
+                self.async_select_one(
+                    table1_rows[data["index"] - 1],
+                    selector=f"{data['selector']}",
+                    int_=data["type"] == "int",
+                    float_=data["type"] == "float",
+                    yuzde=data["type"] == "yuzde",
+                    ek_yer=False
+                ) for data in table1_datas
         ]   
 
-        table1_results = await asyncio.gather(*table1_tasks)
+            table1_results = await asyncio.gather(*table1_tasks)
+        else:
+            table1_results = [None] * len(table1_datas)
+
         model_keys = [
             "osym_kod", "year", "toplam", "aday", "ort_tercih",
             "ilk_bir", "ilk_bir_orn", "ilk_uc", "ilk_uc_orn", "ilk_dokuz", "ilk_dokuz_orn", "tercihler"
@@ -1043,16 +1073,22 @@ class Parser():
         tbody1_rows = self.bs.select(selectors_ort_tercih["tbody1_rows"])
         tbody2_rows = self.bs.select(selectors_ort_tercih["tbody2_rows"])
 
-        main_tasks = [
-            self.async_select_one(
-                main_rows[data["index"] - 1],
-                selector=f"{data['selector']}",
-                int_=data["type"] == "int",
-                float_=data["type"] == "float",
-                yuzde=data["type"] == "yuzde",
-                ek_yer=False
-            ) for data in selectors_ort_tercih["main_datas"]
-        ]
+
+        if main_rows != []:
+            main_tasks = [
+                self.async_select_one(
+                    main_rows[data["index"] - 1],
+                    selector=f"{data['selector']}",
+                    int_=data["type"] == "int",
+                    float_=data["type"] == "float",
+                    yuzde=data["type"] == "yuzde",
+                    ek_yer=False
+                ) for data in selectors_ort_tercih["main_datas"]
+            ]
+            main_results = await asyncio.gather(*main_tasks)
+        else:
+            main_results = [None] * len(selectors_ort_tercih["main_datas"])
+            
         
         tbody1_tasks = [
             self.async_select_one(
@@ -1076,7 +1112,6 @@ class Parser():
             ) for row in tbody2_rows
         ]
 
-        main_results = await asyncio.gather(*main_tasks)
         tbody1_results = await asyncio.gather(*tbody1_tasks)
         tbody2_results = await asyncio.gather(*tbody2_tasks)
 
@@ -1090,6 +1125,8 @@ class Parser():
             "tercih_21", "tercih_22", "tercih_23", "tercih_24"
         ]
 
+        if tbody1_results == []:
+            tbody1_results = [None] * 24
         main_list = [osym_kod, year]
         main_list.extend(main_results)
         tercih_list = dict(zip(tercih_key, tbody1_results))
@@ -1104,19 +1141,23 @@ class Parser():
         
         tercihler = []
         
-        tasks = [
-            self.async_select_one(
-                rows[data["index"] - 1],
-                selector=f"{data['selector']}",
-                int_=data["type"] == "int",
-                float_=False,
-                yuzde=False,
-                ek_yer=False
-            ) for data in selectors_tercih_genel["datas"]
-        ]
+        if rows != []:
+
+            tasks = [
+                self.async_select_one(
+                    rows[data["index"] - 1],
+                    selector=f"{data['selector']}",
+                    int_=data["type"] == "int",
+                    float_=False,
+                    yuzde=False,
+                    ek_yer=False
+                ) for data in selectors_tercih_genel["datas"]
+            ]
         
-        tercihler = await asyncio.gather(*tasks)
-        
+            tercihler = await asyncio.gather(*tasks)
+        else:
+            tercihler = [None] * len(selectors_tercih_genel["datas"])
+
         model_keys = ["osym_kod", "year", "genel", "t_tercih", "k_tercih", "bos_tercih", "ort_tercih"]
         main_list = [osym_kod, year]
         main_list.extend(tercihler)
@@ -1244,7 +1285,7 @@ class Parser():
         )
     
     async def tercih_fark_parser(self, osym_kod: int, year: int) -> TercihFark:
-        if year == 2024: selectors_tercih_fark = selectors["tercih_fark"]["datas_2024"]
+        if year == 2025 or year == 2024: selectors_tercih_fark = selectors["tercih_fark"]["datas_2024"]
         else: selectors_tercih_fark = selectors["tercih_fark"]["datas"]
 
 
@@ -1275,7 +1316,7 @@ class Parser():
 
     async def tercih_fark_onlisans_parser(self, osym_kod: int, year: int) -> TercihFark:
 
-        if year == 2024: selectors_tercih_fark = selectors["tercih_fark"]["datas_2024"]
+        if year == 2025 or year == 2024: selectors_tercih_fark = selectors["tercih_fark"]["datas_2024"]
         else: selectors_tercih_fark = selectors["tercih_fark"]["datas"]
 
 
@@ -1523,7 +1564,7 @@ class Parser():
         selectors_yatay_gecis = selectors["yatay_gecis"]
 
         
-        if year in [2023, 2024]:
+        if year in [2023, 2024, 2025]:
 
             gelen_control = self.bs.select_one(selectors_yatay_gecis["gelen_kontrol"])
             giden_control = self.bs.select_one(selectors_yatay_gecis["giden_kontrol"])
