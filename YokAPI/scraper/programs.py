@@ -353,39 +353,3 @@ class Onlisans(BaseProgram):
         )
         return await Parser(html).yks_net_parser(self.program_id, self.year, onlisans=True)
 
-
-    async def all_functions(self):
-        tasks = [
-            self.genel_blg(),
-            self.kontenjan(),
-            self.cinsiyet(),
-            self.cograf_bolg(),
-            self.iller(),
-            self.ogr_durum(),
-            self.mezun_yil(),
-            self.lise_alan(),
-            self.lise_grup_tip(),
-            self.liseler(),
-            self.okul_birinci(),
-            self.taban_puan(),
-            self.son_profil(),
-            self.yks_net(),
-            self.tercih_istatistik(),
-            self.ort_tercih(),
-            self.tercih_genel(),
-            self.tercih_uni_tur(),
-            self.tercih_uni(),
-            self.tercih_il(),
-            self.tercih_fark(),
-            self.tercih_program(),
-            self.yerlesme_kosul(),
-            self.ogretim_uyesi(),
-            self.kayitli_ogr(),
-            self.mezun_ogr(),
-            self.degisim_ogr(),
-            self.yatay_gecis()
-        ]
-
-        results = await asyncio.gather(*tasks)
-        return results
-
