@@ -546,6 +546,20 @@ selectors = {
         "2324_giden_simdiki":"table:nth-child(3) > tbody > tr > td:nth-child(2)",
         "gelen_kontrol":"div:nth-child(1) > h4",
         "giden_kontrol":"div:nth-child(3) > h4"
+    },
+    "net_sihirbazi":{
+        "rows":"table#mydata > tbody > tr",
+        "headers":"table#mydata > thead > tr > th",
+        "datas":[
+            {"name": "uni", "selector":"td:nth-child(2) > small > a", "type": "str"},
+            {"name": "osym_kod", "selector":"td:nth-child(2) > small > a", "type": "href"},
+            {"name": "year", "selector":"td:nth-child(3)", "type": "int"},
+            {"name": "katsayi", "selector":"td:nth-child(5)", "type": "float"},
+            {"name": "obp", "selector":"td:nth-child(6)", "type": "float"},
+            {"name": "puan", "selector":"td:nth-child(7)", "type": "float"},
+            {"name": "bolum_yerlesen", "selector":"td:nth-child(8)", "type": "int"},
+        ],
+        "ders_baslangic_index": 9
     }
 
 }

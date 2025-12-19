@@ -468,3 +468,17 @@ class YatayGecis(BaseModel):
     year: Optional[int]
     gelen: Optional[list[YatayGecisModelDetay]]
     giden: Optional[list[YatayGecisModelDetay]]
+
+class NetSihirbaziDetay(BaseModel):
+    osym_kod: Optional[int]
+    year: Optional[int]
+    uni: Optional[str]
+    katsayi: Optional[float]
+    obp: Optional[float]
+    puan: Optional[float]
+    bolum_yerlesen: Optional[str]
+    dersler: Optional[dict[str, float]]
+    
+class NetSihirbazi(BaseModel):
+    bolum_id: Optional[int]
+    bolumler: Optional[list[NetSihirbaziDetay]]

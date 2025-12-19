@@ -353,3 +353,37 @@ class Onlisans(BaseProgram):
         )
         return await Parser(html).yks_net_parser(self.program_id, self.year, onlisans=True)
 
+class NetSihirbaziLisans(BaseProgram):
+    URLS = {
+        "net_sihirbazi": "netler-tablo.php?b={}"
+    }
+    def __init__(self, bolum_id: int, session: aiohttp.ClientSession = None):
+        super().__init__(session=session)
+        self.bolum_id = bolum_id
+    
+    def get_url(self, key):
+        return self.URLS[key].format(self.bolum_id)
+    
+    async def net_sihirbazi(self):
+        html = await self.fetcher.send_request_not_year(
+            self.get_url("net_sihirbazi")
+        )
+        return await Parser(html).net_sihirbazi_parser(self.bolum_id)
+
+class NetSihirbaziOnlisans(BaseProgram):
+    URLS = {
+        "net_sihirbazi": "netler-onlisans-tablo.php?b={}"
+    }
+
+    def __init__(self, bolum_id: int, session: aiohttp.ClientSession = None):
+        super().__init__(session=session)
+        self.bolum_id = bolum_id
+
+    def get_url(self, key):
+        return self.URLS[key].format(self.bolum_id)
+    
+    async def net_sihirbazi(self):
+        html = await self.fetcher.send_request_not_year(
+            self.get_url("net_sihirbazi")
+        )
+        return await Parser(html).net_sihirbazi_parser(self.bolum_id)

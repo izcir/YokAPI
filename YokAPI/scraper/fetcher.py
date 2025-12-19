@@ -54,6 +54,10 @@ class Fetcher:
         year_path = await self.year_control(year)
         url = self.return_url(year_path, endpoint)
         return await self.fetch(url)
+    
+    async def send_request_not_year(self, endpoint: str) -> str:
+        url = self.return_url("", endpoint)
+        return await self.fetch(url)
 
     async def close(self):
         if self._bool_session and self.session:

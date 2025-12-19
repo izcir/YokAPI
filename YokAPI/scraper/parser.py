@@ -1708,4 +1708,260 @@ class Parser():
                 giden=giden_results
             )
 
+    """
+    <div class="row">
+<div class="tablo_ortala">
+<table id="mydata" class="table table-striped table-bordered table-responsive dt-responsive" cellspacing="0" width="100%" style="font-size:11px;">
+        <thead>
+            <tr>
+                <th>&nbsp;</th>
+                <th class="text-center">Üniversite</th>
+				<th class="text-center">Yılı</th>
+                <th class="text-center">Türü</th>
+                <th class="text-center">Katsayı</th>
+                <th class="text-center" >Yerleşen Son Kişi</th>
+                <th class="text-center"></th>
+                <th class="text-center">Yerl.</th>
+                <th class="text-center">TYT Türkçe</th>
+                <th class="text-center">TYT Sosyal</th>
+                <th class="text-center">TYT Mat</th>
+                <th class="text-center">TYT Fen</th>
+                <th class="text-center">AYT Mat</th>
+                <th class="text-center">AYT Türkçe</th>
+                <th class="text-center">AYT Tarih1</th>
+				<th class="text-center">AYT Coğrafya1</th>
+            </tr>
+        </thead>
+        <tfoot>
+            <tr>
+            	<th></th>
+                <th>Üniversite Ara</th>
+                <th>Seç</th>
+				<th>Seç</th>
+                <th>Seç</th>
+                <th class="text-center" title="Yerleşen Son Kişinin">Ortaöğretim Başarı Puanı (OBP)</th>
+                <th></th>
+                <th></th>
+                <th class="text-center" title="Testteki soru sayısı">(40)</th>
+                <th class="text-center" title="Testteki soru sayısı">(20)</th>
+                <th class="text-center" title="Testteki soru sayısı">(40)</th>
+                <th class="text-center" title="Testteki soru sayısı">(20)</th>
+                
+                <th class="text-center" title="Testteki soru sayısı">(40)</th>              
+                <th class="text-center" title="Testteki soru sayısı">(24)</th>
+                <th class="text-center" title="Testteki soru sayısı">(10)</th>
+				<th class="text-center" title="Testteki soru sayısı">(6)</th>
+            </tr>
+        </tfoot>
+        <tbody>
+            <tr>
+                <td></td>
+                <td style="word-break:break-all;"><small><a href="lisans.php?y=203910309" target="_blank">KOÇ ÜNİVERSİTESİ(İngilizce) (Burslu) (4 Yıllık)</a></small></td>
+                <td class="text-center">2025</td>
+				<td class="text-center">Vakıf</td>
+                <td class="text-center">0.12</td>
+                <td class="text-center">491,218</td>
+                <td class="text-center">517,80171</td>
+                <td class="text-center">23</td>
+                <td class="text-center">37,00</td>
+                <td class="text-center">18,00</td>
+                <td class="text-center">27,25</td>
+                <td class="text-center">18,00</td>
+                <td class="text-center">33,50</td>           
+                <td class="text-center">24,00</td>
+                <td class="text-center">10,00</td>
+				<td class="text-center">4,75</td>
+            </tr>
+            <tr>
+                <td></td>
+                <td style="word-break:break-all;"><small><a href="lisans.php?y=102210223" target="_blank">BOĞAZİÇİ ÜNİVERSİTESİ(İngilizce) (4 Yıllık)</a></small></td>
+                <td class="text-center">2025</td>
+				<td class="text-center">Devlet</td>
+                <td class="text-center">0.12</td>
+                <td class="text-center">472,539</td>
+                <td class="text-center">495,76069</td>
+                <td class="text-center">80</td>
+                <td class="text-center">35,00</td>
+                <td class="text-center">11,25</td>
+                <td class="text-center">34,00</td>
+                <td class="text-center">13,75</td>
+                <td class="text-center">32,25</td>           
+                <td class="text-center">21,50</td>
+                <td class="text-center">7,50</td>
+				<td class="text-center">6,00</td>
+            </tr>
+            <tr>
+                <td></td>
+                <td style="word-break:break-all;"><small><a href="lisans.php?y=202110383" target="_blank">İHSAN DOĞRAMACI BİLKENT ÜNİVERSİTESİ(İngilizce) (Burslu) (4 Yıllık)</a></small></td>
+                <td class="text-center">2025</td>
+				<td class="text-center">Vakıf</td>
+                <td class="text-center">0.12</td>
+                <td class="text-center">477,244</td>
+                <td class="text-center">492,62633</td>
+                <td class="text-center">23</td>
+                <td class="text-center">29,50</td>
+                <td class="text-center">17,50</td>
+                <td class="text-center">31,75</td>
+                <td class="text-center">20,00</td>
+                <td class="text-center">31,50</td>           
+                <td class="text-center">21,50</td>
+                <td class="text-center">7,50</td>
+				<td class="text-center">3,75</td>
+            </tr>
+            <tr>
+                <td></td>
+                <td style="word-break:break-all;"><small><a href="lisans.php?y=205410071" target="_blank">TOBB EKONOMİ VE TEKNOLOJİ ÜNİVERSİTESİ(Burslu) (4 Yıllık)</a></small></td>
+                <td class="text-center">2025</td>
+				<td class="text-center">Vakıf</td>
+                <td class="text-center">0.12</td>
+                <td class="text-center">474,508</td>
+                <td class="text-center">481,52889</td>
+                <td class="text-center">7</td>
+                <td class="text-center">30,00</td>
+                <td class="text-center">18,75</td>
+                <td class="text-center">30,75</td>
+                <td class="text-center">15,50</td>
+                <td class="text-center">34,25</td>           
+                <td class="text-center">17,75</td>
+                <td class="text-center">7,75</td>
+				<td class="text-center">2,25</td>
+            </tr>
+            <tr>
+                <td></td>
+                <td style="word-break:break-all;"><small><a href="lisans.php?y=204810016" target="_blank">ÖZYEĞİN ÜNİVERSİTESİ(İngilizce) (Burslu) (4 Yıllık)</a></small></td>
+                <td class="text-center">2025</td>
+				<td class="text-center">Vakıf</td>
+                <td class="text-center">0.12</td>
+                <td class="text-center">483,898</td>
+                <td class="text-center">480,02849</td>
+                <td class="text-center">11</td>
+                <td class="text-center">35,00</td>
+                <td class="text-center">16,25</td>
+                <td class="text-center">27,50</td>
+                <td class="text-center">17,75</td>
+                <td class="text-center">28,50</td>           
+                <td class="text-center">17,75</td>
+                <td class="text-center">8,75</td>
+				<td class="text-center">6,00</td>
+            </tr>
+            <tr>
+                <td></td>
+                <td style="word-break:break-all;"><small><a href="lisans.php?y=104010079" target="_blank">GALATASARAY ÜNİVERSİTESİ(Fransızca) (4 Yıllık)</a></small></td>
+                <td class="text-center">2025</td>
+				<td class="text-center">Devlet</td>
+                <td class="text-center">0.12</td>
+                <td class="text-center">452,936</td>
+                <td class="text-center">475,83274</td>
+                <td class="text-center">30</td>
+                <td class="text-center">31,25</td>
+                <td class="text-center">15,00</td>
+                <td class="text-center">29,00</td>
+                <td class="text-center">13,75</td>
+                <td class="text-center">31,25</td>           
+                <td class="text-center">20,25</td>
+                <td class="text-center">10,00</td>
+				<td class="text-center">2,25</td>
+            </tr>
+            <tr>
+                <td></td>
+                <td style="word-break:break-all;"><small><a href="lisans.php?y=108410212" target="_blank">ORTA DOĞU TEKNİK ÜNİVERSİTESİ(İngilizce) (4 Yıllık)</a></small></td>
+                <td class="text-center">2025</td>
+				<td class="text-center">Devlet</td>
+                <td class="text-center">0.12</td>
+                <td class="text-center">481,060</td>
+                <td class="text-center">475,32270</td>
+                <td class="text-center">58</td>
+                <td class="text-center">28,00</td>
+                <td class="text-center">17,75</td>
+                <td class="text-center">23,50</td>
+                <td class="text-center">17,75</td>
+                <td class="text-center">31,00</td>           
+                <td class="text-center">19,00</td>
+                <td class="text-center">10,00</td>
+				<td class="text-center">3,75</td>
+            </tr>
+    """
+
+
+    async def net_sihirbazi_parser(self, bolum_id: int) -> NetSihirbazi:
+        selectors_net = selectors["net_sihirbazi"]
+        rows = self.bs.select(selectors_net["rows"])
+        
+        if not rows:
+            return NetSihirbazi(
+                bolum_id=bolum_id,
+                bolumler=[]
+            )
+        
+        # Thead'den ders isimlerini al (9. indexten itibaren)
+        headers = self.bs.select(selectors_net["headers"])
+        ders_baslangic = selectors_net["ders_baslangic_index"]
+        ders_isimleri = []
+        for i, th in enumerate(headers):
+            if i >= ders_baslangic - 1:  # 0-indexed olduğu için -1
+                ders_adi = th.text.strip()
+                if ders_adi:
+                    ders_isimleri.append(ders_adi)
+        
+        async def parse_row(row) -> NetSihirbaziDetay:
+            # Ana verileri al
+            uni_element = row.select_one(selectors_net["datas"][0]["selector"])
+            uni = uni_element.text.strip() if uni_element else None
+            
+            # osym_kod href'ten al
+            href = uni_element.get("href", "") if uni_element else ""
+            osym_kod = None
+            if href:
+                # href örneği: lisans.php?y=203910309
+                try:
+                    osym_kod = int(href.split("=")[-1])
+                except:
+                    osym_kod = None
+            
+            year_el = row.select_one(selectors_net["datas"][2]["selector"])
+            year = self.format_text(year_el.text, int_=True) if year_el else None
+            
+            katsayi_el = row.select_one(selectors_net["datas"][3]["selector"])
+            katsayi = self.format_text(katsayi_el.text, float_=True) if katsayi_el else None
+            
+            obp_el = row.select_one(selectors_net["datas"][4]["selector"])
+            obp = self.format_text(obp_el.text, float_=True) if obp_el else None
+            
+            puan_el = row.select_one(selectors_net["datas"][5]["selector"])
+            puan = self.format_text(puan_el.text, float_=True) if puan_el else None
+            
+            bolum_yerlesen_el = row.select_one(selectors_net["datas"][6]["selector"])
+            bolum_yerlesen = bolum_yerlesen_el.text.strip() if bolum_yerlesen_el else None
+            
+            # Dersleri dinamik olarak al (ders_baslangic indexinden itibaren)
+            dersler = {}
+            tds = row.select("td")
+            for i, ders_adi in enumerate(ders_isimleri):
+                td_index = ders_baslangic - 1 + i  # 0-indexed
+                if td_index < len(tds):
+                    ders_el = tds[td_index]
+                    ders_net = self.format_text(ders_el.text, float_=True)
+                    if ders_net is None:
+                        ders_net = 0.0
+                    dersler[ders_adi] = ders_net
+                else:
+                    dersler[ders_adi] = None
+            return NetSihirbaziDetay(
+                osym_kod=osym_kod,
+                year=year,
+                uni=uni,
+                katsayi=katsayi,
+                obp=obp,
+                puan=puan,
+                bolum_yerlesen=bolum_yerlesen,
+                dersler=dersler
+            )
+        
+        tasks = [parse_row(row) for row in rows]
+        bolumler = await asyncio.gather(*tasks)
+        
+        return NetSihirbazi(
+            bolum_id=bolum_id,
+            bolumler=list(bolumler)
+        )
 

@@ -1,3 +1,3 @@
-from .scraper.programs import Lisans, Onlisans
+from .scraper.programs import Lisans, Onlisans, NetSihirbaziLisans, NetSihirbaziOnlisans
 
-__all__ = ["Lisans", "Onlisans"]
+__all__ = ["Lisans", "Onlisans", "NetSihirbaziLisans", "NetSihirbaziOnlisans"]

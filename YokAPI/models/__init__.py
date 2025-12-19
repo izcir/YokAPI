@@ -33,7 +33,9 @@ from .data_model import (
     YatayGecis,
     TercihFarkOnlisans,
     GenelBilgilerOnlisans,
-    TabanPuanOnlisans
+    TabanPuanOnlisans,
+    NetSihirbaziDetay,
+    NetSihirbazi
 )
 
 __all__ = [
@@ -71,7 +73,9 @@ __all__ = [
     'YatayGecis',
     'TercihFarkOnlisans',
     'GenelBilgilerOnlisans',
-    'TabanPuanOnlisans'
+    'TabanPuanOnlisans',
+    'NetSihirbaziDetay',
+    'NetSihirbazi'
 ]
 
 
