@@ -2,9 +2,9 @@ from setuptools import setup, find_packages
 
 setup(
     name="YokAPI",
-    version="1.1.6",
+    version="1.1.7",
     author="IZCI",
-    author_email="email@example.com",
+    author_email="ramazan.izcir@gmail.com",
     description="Unofficial  API for YokAtlas",
     long_description=open("README.md", encoding="utf-8").read(),
     long_description_content_type="text/markdown",
