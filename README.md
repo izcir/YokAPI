@@ -18,6 +18,9 @@
 - Telegram: [`izcipy`](https://t.me/izcipy)
 - Mail: [`ramazan.izcir@gmail.com`](mailto:ramazan.izcir@gmail.com)
 
+#### 🆕 **Net Sihirbazı desteği eklendi!** Bölüm bazlı tüm bölümlere son giren kişilerin netlerine ve obpsine ulaşın.
+
+
 ## 📦 Kurulum
 ```sh
 pip install YokAPI
@@ -285,6 +288,93 @@ asyncio.run(run())
 #### 🌍 Coğrafi Bilgiler
 - `cograf_bolg()` → [`CografiBolgeler`](#cografibolgeler)
 - `iller()` → [`İller`](#iller)
+
+---
+
+## 📌 `NetSihirbaziLisans` ve `NetSihirbaziOnlisans` Kullanımı
+
+Net Sihirbazı, belirli bir bölüm için tüm üniversitelerdeki yerleşen son kişinin net ortalamalarını getirir.
+
+### Örnek Kullanım
+
+```python
+from YokAPI import NetSihirbaziLisans, NetSihirbaziOnlisans
+import asyncio
+
+async def main():
+    # Lisans için (bolum_id: data/bolumler_lisans.csv dosyasından alınır)
+    async with NetSihirbaziLisans(bolum_id=11685) as net_lisans:  # 11685 = Abaza Dili ve Edebiyatı
+        data = await net_lisans.net_sihirbazi()
+        print(data.model_dump())
+    
+    # Önlisans için (bolum_id: data/bolumler_onlisans.csv dosyasından alınır)
+    async with NetSihirbaziOnlisans(bolum_id=32020) as net_onlisans:  # 32020 = Bilgisayar Programcılığı
+        data = await net_onlisans.net_sihirbazi()
+        print(data.model_dump())
+
+asyncio.run(main())
+```
+
+### Örnek Çıktı (Lisans - Abaza Dili ve Edebiyatı)
+
+```json
+{
+  "bolum_id": 11685,
+  "bolumler": [
+    {
+      "osym_kod": 103390230,
+      "year": 2025,
+      "uni": "DÜZCE ÜNİVERSİTESİ (4 Yıllık)",
+      "katsayi": 0.12,
+      "obp": 308.126,
+      "puan": 213.28355,
+      "bolum_yerlesen": "21",
+      "dersler": {
+        "TYT Türkçe": 8.0,
+        "TYT Sosyal": 7.0,
+        "TYT Mat": -1.75,
+        "TYT Fen": 2.0,
+        "AYT TDE": 0.5,
+        "AYT Tar1": 3.25,
+        "AYT Coğ1": -0.5,
+        "AYT Tar2": 2.25,
+        "AYT Coğ2": 5.0,
+        "AYT Fel": -0.25,
+        "AYT Din": 0.75
+      }
+    },
+    {
+      "osym_kod": 103390231,
+      "year": 2025,
+      "uni": "DÜZCE ÜNİVERSİTESİ (İÖ) (4 Yıllık)",
+      "katsayi": 0.12,
+      "obp": 295.432,
+      "puan": 198.54321,
+      "bolum_yerlesen": "15",
+      "dersler": {
+        "TYT Türkçe": 6.5,
+        "TYT Sosyal": 5.0,
+        "TYT Mat": 1.25,
+        "TYT Fen": 3.0,
+        "AYT TDE": 1.0,
+        "AYT Tar1": 2.5,
+        "AYT Coğ1": 0.75,
+        "AYT Tar2": 1.5,
+        "AYT Coğ2": 3.25,
+        "AYT Fel": 0.5,
+        "AYT Din": 1.25
+      }
+    }
+  ]
+}
+```
+
+### Notlar
+- `bolum_id` değerleri `data/bolumler_lisans.csv` ve `data/bolumler_onlisans.csv` dosyalarından alınabilir.
+- `dersler` alanı dinamik olarak oluşturulur ve bölümün puan türüne göre farklı dersler içerebilir (SAY/SÖZ/EA/TYT).
+- Her üniversitedeki yerleşen son kişinin net ortalamaları döndürülür.
+
+---
 
 
 # 📌 Modeller  
